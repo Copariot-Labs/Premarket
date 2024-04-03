@@ -11,8 +11,8 @@ struct Token {
     address token;
     uint48 settleTime;
     uint48 settleDuration;
-    uint152 settleRate; // number of token per point
-    uint8 status; //
+    uint152 settleRate; 
+    uint8 status; 
 }
 
 struct Offer {
