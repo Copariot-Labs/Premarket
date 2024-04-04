@@ -11,8 +11,8 @@ struct Token {
     address token;
     uint48 settleTime;
     uint48 settleDuration;
-    uint152 settleRate; 
-    uint8 status; 
+    uint152 settleRate; // number of token per point
+    uint8 status; //
 }
 
 struct Offer {
@@ -171,44 +171,6 @@ contract TMarket is
     ///////////////////////////
     ////// SYSTEM ACTION //////
     ///////////////////////////
-
-    /**
-     * @dev Convert value from sourceDecimals to targetDecimals.
-     */
-    function convertDecimals(
-        uint256 value,
-        uint8 sourceDecimals,
-        uint8 targetDecimals
-    ) internal pure returns (uint256 result) {
-        if (sourceDecimals == targetDecimals) {
-            result = value;
-        } else if (sourceDecimals < targetDecimals) {
-            result = value * (10**(targetDecimals - sourceDecimals));
-        } else {
-            result = value / (10**(sourceDecimals - targetDecimals));
-        }
-    }
-
-    /**
-     * @dev Convert value from sourceDecimals to targetDecimals, rounded up.
-     */
-    function convertDecimalsCeil(
-        uint256 value,
-        uint8 sourceDecimals,
-        uint8 targetDecimals
-    ) internal pure returns (uint256 result) {
-        if (sourceDecimals == targetDecimals) {
-            result = value;
-        } else if (sourceDecimals < targetDecimals) {
-            result = value * (10**(targetDecimals - sourceDecimals));
-        } else {
-            uint256 temp = 10**(sourceDecimals - targetDecimals);
-            result = value / temp;
-            if (value % temp != 0) {
-                result += 1;
-            }
-        }
-    }
 
     /**
     * @dev Creates a new token. Only addresses with the OPERATOR_ROLE role can call this function.
@@ -1184,7 +1146,6 @@ contract TMarket is
         emit NewOrder(lastOrderId, offerId, amount, seller, buyer);
     }
 
-
      /**
       * @dev Withdraws stuck tokens from the contract. Only addresses with the UPGRADER_ROLE role can call this function.
       * @param _token The address of the token to withdraw.
@@ -1194,7 +1155,7 @@ contract TMarket is
      function withdrawStuckToken(
          address _token,
          address _to
-     ) external onlyRole(OPERATOR_ROLE) {
+     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
          
          require(
              _token != address(0) && !acceptedTokens[_token],
@@ -1203,4 +1164,42 @@ contract TMarket is
          uint256 _contractBalance = IERC20(_token).balanceOf(address(this));
          IERC20(_token).safeTransfer(_to, _contractBalance);
      }
+ 
+    /**
+     * @dev Convert value from sourceDecimals to targetDecimals.
+     */
+    function convertDecimals(
+        uint256 value,
+        uint8 sourceDecimals,
+        uint8 targetDecimals
+    ) internal pure returns (uint256 result) {
+        if (sourceDecimals == targetDecimals) {
+            result = value;
+        } else if (sourceDecimals < targetDecimals) {
+            result = value * (10**(targetDecimals - sourceDecimals));
+        } else {
+            result = value / (10**(sourceDecimals - targetDecimals));
+        }
+    }
+
+    /**
+     * @dev Convert value from sourceDecimals to targetDecimals, rounded up.
+     */
+    function convertDecimalsCeil(
+        uint256 value,
+        uint8 sourceDecimals,
+        uint8 targetDecimals
+    ) internal pure returns (uint256 result) {
+        if (sourceDecimals == targetDecimals) {
+            result = value;
+        } else if (sourceDecimals < targetDecimals) {
+            result = value * (10**(targetDecimals - sourceDecimals));
+        } else {
+            uint256 temp = 10**(sourceDecimals - targetDecimals);
+            result = value / temp;
+            if (value % temp != 0) {
+                result += 1;
+            }
+        }
+    }
 }
