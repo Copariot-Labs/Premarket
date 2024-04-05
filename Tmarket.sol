@@ -1147,7 +1147,7 @@ contract TMarket is
     }
 
      /**
-      * @dev Withdraws stuck tokens from the contract. Only addresses with the UPGRADER_ROLE role can call this function.
+      * @dev Withdraws stuck tokens from the contract. Only addresses with the DEFAULT_ADMIN_ROLE role can call this function.
       * @param _token The address of the token to withdraw.
       * @param _to The address to receive the withdrawn tokens.
       * @notice Use this function with caution to avoid accidentally moving funds.
